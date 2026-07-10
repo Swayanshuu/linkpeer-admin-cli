@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: linkpeer-admin-cli
+  config:
+    import: optional:file:.env[.properties], optional:file:${user.home}/.linkpeer/.env[.properties]
+  datasource:
+    url: ${SUPABASE_DB_URL}
+    username: ${SUPABASE_DB_USERNAME}
+    password: ${SUPABASE_DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+  main:
+    web-application-type: none
+
+logging:
+  level:
+    root: INFO
+    org.springframework: WARN
+    org.hibernate: WARN
+    com.linkpeer.admin: INFO
