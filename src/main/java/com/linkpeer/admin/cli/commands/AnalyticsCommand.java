@@ -13,7 +13,6 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 
 import java.util.List;
-import java.util.UUID;
 
 @Component
 @Command(name = "analytics", aliases = {"dashboard"}, description = "Analytics commands")
@@ -26,9 +25,9 @@ public class AnalyticsCommand {
     private final AuthService authService;
 
     public AnalyticsCommand(AnalyticsService analyticsService, UserRepository userRepository,
-                            UserActivityRepository userActivityRepository,
-                            AnalyticsEventRepository analyticsEventRepository,
-                            AuthService authService) {
+                             UserActivityRepository userActivityRepository,
+                             AnalyticsEventRepository analyticsEventRepository,
+                             AuthService authService) {
         this.analyticsService = analyticsService;
         this.userRepository = userRepository;
         this.userActivityRepository = userActivityRepository;
@@ -69,7 +68,7 @@ public class AnalyticsCommand {
         List<User> topUsers = userRepository.findTopUsers();
         for (int i = 0; i < topUsers.size(); i++) {
             User u = topUsers.get(i);
-            System.out.printf("%d. %s (Score: %.2f)%n", (i+1), u.getName(), u.getRankingScore() != null ? u.getRankingScore() : 0.0);
+            System.out.printf("%d. %s (Score: %d)%n", (i+1), u.getName(), u.getRankingScore() != null ? u.getRankingScore() : 0);
         }
     }
 
@@ -81,7 +80,7 @@ public class AnalyticsCommand {
             System.out.println("No activity found for user.");
         }
         for (UserActivity a : activities) {
-            System.out.printf("[%s] %s: %s%n", a.getCreatedAt(), a.getActivityType(), a.getDetails());
+            System.out.printf("[%s] %s%n", a.getCreatedAt(), a.getActivityType());
         }
     }
 

@@ -1,9 +1,10 @@
 package com.linkpeer.admin.cli.commands;
 
+import com.linkpeer.admin.cli.InteractiveShell;
 import com.linkpeer.admin.service.AuthService;
+import org.jline.reader.UserInterruptException;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
-import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 @Component
@@ -17,12 +18,41 @@ public class AuthCommand {
     }
 
     @Command(name = "login", description = "Login to the admin CLI")
-    public void login(@Parameters(index = "0", description = "Admin email", interactive = true, arity = "0..1", prompt = "Email: ") String email,
-                      @Parameters(index = "1", description = "Admin password", interactive = true, arity = "0..1", prompt = "Password: ") String password) {
-        if (authService.login(email, password)) {
-            System.out.println("\u001B[32m✓ Login successful\u001B[0m");
-        } else {
-            System.out.println("\u001B[31m✗ Invalid email or password\u001B[0m");
+    public void login(@Parameters(index = "0", arity = "0..1", description = "Admin email") String email,
+                      @Parameters(index = "1", arity = "0..1", description = "Admin password") String password) {
+        try {
+            if (email == null || email.trim().isEmpty()) {
+                if (InteractiveShell.reader != null) {
+                    email = InteractiveShell.reader.readLine("Email: ");
+                }
+            }
+            if (email == null || email.trim().isEmpty()) {
+                System.out.println("\u001B[31m✗ Email is required\u001B[0m");
+                return;
+            }
+
+            if (password == null || password.trim().isEmpty()) {
+                if (InteractiveShell.reader != null) {
+                    password = InteractiveShell.reader.readLine("Password: ", '*');
+                } else if (System.console() != null) {
+                    char[] passChars = System.console().readPassword("Password: ");
+                    if (passChars != null) {
+                        password = new String(passChars);
+                    }
+                }
+            }
+            if (password == null || password.trim().isEmpty()) {
+                System.out.println("\u001B[31m✗ Password is required\u001B[0m");
+                return;
+            }
+
+            if (authService.login(email.trim(), password)) {
+                System.out.println("\u001B[32m✓ Login successful\u001B[0m");
+            } else {
+                System.out.println("\u001B[31m✗ Invalid email or password\u001B[0m");
+            }
+        } catch (UserInterruptException e) {
+            System.out.println("\n\u001B[33m- Login cancelled\u001B[0m");
         }
     }
 

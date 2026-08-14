@@ -46,12 +46,8 @@ public class PaymentsCommand {
     }
 
     @Command(name = "view", description = "View payment details")
-    public void view(@Parameters(index = "0", description = "Transaction ID") String transactionId) {
+    public void view(@Parameters(index = "0", description = "Transaction ID or Payment UUID") String transactionId) {
         if (!checkAuth()) return;
-        // In reality we should find by transaction_id, let's assume UUID parameter is id. Wait, the prompt says transactionId. 
-        // Let's iterate or assume it's UUID ID for simplicity, or find by id.
-        // For CLI, we can fetch all and filter since we don't have findByTransactionId in repo, or we add it. 
-        // We will just use the provided ID as UUID for `payment.id`.
         try {
             UUID id = UUID.fromString(transactionId);
             Optional<Payment> opt = paymentRepository.findById(id);
@@ -60,25 +56,27 @@ public class PaymentsCommand {
                 System.out.println("ID: " + p.getId());
                 System.out.println("Txn ID: " + p.getTransactionId());
                 System.out.println("User: " + (p.getUser() != null ? p.getUser().getName() : ""));
-                System.out.println("Amount: " + p.getAmount() + " " + p.getCurrency());
+                System.out.println("Plan Type: " + p.getPlanType());
+                System.out.println("Amount: " + p.getAmount());
+                System.out.println("Provider: " + p.getPaymentProvider());
                 System.out.println("Status: " + p.getStatus());
                 System.out.println("Date: " + p.getCreatedAt());
-            } else {
-                System.out.println("\u001B[31m✗ Payment not found\u001B[0m");
+                return;
             }
-        } catch (IllegalArgumentException e) {
-             System.out.println("\u001B[31m✗ Invalid ID format\u001B[0m");
+        } catch (IllegalArgumentException ignored) {
         }
+
+        System.out.println("\u001B[31m✗ Payment not found\u001B[0m");
     }
 
     private void printPayments(List<Payment> payments) {
-        System.out.printf("%-36s | %-20s | %-10s | %-10s | %-10s | %-20s%n",
-                "Payment ID", "User", "Amount", "Currency", "Status", "Date");
-        System.out.println("-".repeat(115));
+        System.out.printf("%-36s | %-20s | %-10s | %-10s | %-10s | %-10s | %-20s%n",
+                "Payment ID", "User", "Plan", "Amount", "Provider", "Status", "Date");
+        System.out.println("-".repeat(130));
         for (Payment p : payments) {
-            System.out.printf("%-36s | %-20s | %-10s | %-10s | %-10s | %-20s%n",
+            System.out.printf("%-36s | %-20s | %-10s | %-10s | %-10s | %-10s | %-20s%n",
                     p.getId(), (p.getUser() != null ? p.getUser().getName() : ""),
-                    p.getAmount(), p.getCurrency(), p.getStatus(), p.getCreatedAt());
+                    p.getPlanType(), p.getAmount(), p.getPaymentProvider(), p.getStatus(), p.getCreatedAt());
         }
     }
 }

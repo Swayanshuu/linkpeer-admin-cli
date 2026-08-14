@@ -8,7 +8,6 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 
 import java.util.List;
-import java.util.UUID;
 
 @Component
 @Command(name = "faculty", description = "Faculty management commands")
@@ -38,12 +37,12 @@ public class FacultyCommand {
             System.out.println("No pending faculty approvals.");
             return;
         }
-        System.out.printf("%-36s | %-20s | %-15s | %-15s | %-20s%n", 
-                "User ID", "Name", "Designation", "Department", "Proof");
-        System.out.println("-".repeat(115));
+        System.out.printf("%-36s | %-20s | %-15s | %-15s | %-30s%n", 
+                "User ID", "Name", "Designation", "Department", "Verification Image");
+        System.out.println("-".repeat(125));
         for (User u : pending) {
-            System.out.printf("%-36s | %-20s | %-15s | %-15s | %-20s%n",
-                    u.getId(), u.getName(), u.getDesignation(), u.getDepartment(), u.getFacultyProof());
+            System.out.printf("%-36s | %-20s | %-15s | %-15s | %-30s%n",
+                    u.getId(), u.getName(), u.getDesignation(), u.getDepartment(), u.getFacultyVerificationImage());
         }
     }
 
@@ -58,9 +57,10 @@ public class FacultyCommand {
     }
 
     @Command(name = "reject", description = "Reject faculty")
-    public void reject(@Parameters(index = "0", description = "User ID") String userId) {
+    public void reject(@Parameters(index = "0", description = "User ID") String userId,
+                       @Parameters(index = "1", arity = "0..1", description = "Rejection reason") String reason) {
         if (!checkAuth()) return;
-        if (userService.rejectFaculty(userId)) {
+        if (userService.rejectFaculty(userId, reason)) {
             System.out.println("\u001B[32m✓ Faculty rejected successfully\u001B[0m");
         } else {
             System.out.println("\u001B[31m✗ User not found\u001B[0m");

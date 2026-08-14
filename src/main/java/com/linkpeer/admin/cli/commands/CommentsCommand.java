@@ -9,7 +9,6 @@ import picocli.CommandLine.Parameters;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Component
 @Command(name = "comments", description = "Comment management commands")
@@ -36,10 +35,11 @@ public class CommentsCommand {
         if (!checkAuth()) return;
         List<PostComment> comments = commentRepository.findAll();
         for (PostComment c : comments) {
-            System.out.printf("%s | Post: %s | User: %s | %s%n",
+            System.out.printf("ID: %d | Post: %s | User: %s | Likes: %d | %s%n",
                     c.getId(), 
                     c.getPost() != null ? c.getPost().getId() : null,
                     c.getAuthor() != null ? c.getAuthor().getName() : null,
+                    c.getLikesCount() != null ? c.getLikesCount() : 0,
                     c.getCreatedAt());
         }
     }
@@ -49,12 +49,12 @@ public class CommentsCommand {
         if (!checkAuth()) return;
         List<PostComment> comments = commentRepository.findByPostId(postId);
         for (PostComment c : comments) {
-            System.out.printf("%s - %s%n", c.getId(), c.getContent());
+            System.out.printf("ID: %d - %s%n", c.getId(), c.getCommentText());
         }
     }
 
     @Command(name = "delete", description = "Delete comment")
-    public void delete(@Parameters(index = "0", description = "Comment ID") UUID commentId) {
+    public void delete(@Parameters(index = "0", description = "Comment ID") Long commentId) {
         if (!checkAuth()) return;
         if (commentRepository.existsById(commentId)) {
             commentRepository.deleteById(commentId);
@@ -65,16 +65,19 @@ public class CommentsCommand {
     }
 
     @Command(name = "view", description = "View comment")
-    public void view(@Parameters(index = "0", description = "Comment ID") UUID commentId) {
+    public void view(@Parameters(index = "0", description = "Comment ID") Long commentId) {
         if (!checkAuth()) return;
         Optional<PostComment> opt = commentRepository.findById(commentId);
         if (opt.isPresent()) {
             PostComment c = opt.get();
             System.out.println("ID: " + c.getId());
-            System.out.println("Post: " + (c.getPost() != null ? c.getPost().getId() : ""));
+            System.out.println("Post ID: " + (c.getPost() != null ? c.getPost().getId() : ""));
             System.out.println("Author: " + (c.getAuthor() != null ? c.getAuthor().getName() : ""));
-            System.out.println("Content: " + c.getContent());
+            System.out.println("Comment Text: " + c.getCommentText());
+            System.out.println("Likes Count: " + c.getLikesCount());
+            System.out.println("Liked By: " + c.getLikedBy());
             System.out.println("Created At: " + c.getCreatedAt());
+            System.out.println("Updated At: " + c.getUpdatedAt());
         } else {
             System.out.println("\u001B[31m✗ Comment not found\u001B[0m");
         }

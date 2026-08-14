@@ -2,21 +2,24 @@ package com.linkpeer.admin.domain;
 
 import jakarta.persistence.*;
 import lombok.Data;
+
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Data
 @Entity
 @Table(name = "saved_posts")
 public class SavedPost {
-    @Id
-    private UUID id;
+
+    @EmbeddedId
+    private SavedPostId id;
 
     @ManyToOne(fetch = FetchType.EAGER)
+    @MapsId("postId")
     @JoinColumn(name = "post_id")
     private Post post;
 
     @ManyToOne(fetch = FetchType.EAGER)
+    @MapsId("userId")
     @JoinColumn(name = "user_id")
     private User user;
 

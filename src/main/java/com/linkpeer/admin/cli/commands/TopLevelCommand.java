@@ -16,6 +16,7 @@ import picocli.CommandLine.Command;
          optionListHeading = "%n@|bold,green Options:|@%n",
          commandListHeading = "%n@|bold,green Commands:|@%n",
          subcommands = {
+             AuthCommand.class,
              UsersCommand.class,
              FacultyCommand.class,
              PostsCommand.class,
@@ -23,11 +24,13 @@ import picocli.CommandLine.Command;
              SubsCommand.class,
              PaymentsCommand.class,
              AnalyticsCommand.class,
-             ExportCommand.class
+             ExportCommand.class,
+             NoticesCommand.class,
+             BroadcastsCommand.class,
+             NotificationsCommand.class
          })
 public class TopLevelCommand implements Runnable {
 
-    
     private final AuthService authService;
     
     public TopLevelCommand(AuthService authService) {
@@ -40,7 +43,7 @@ public class TopLevelCommand implements Runnable {
         if (authService.isAuthenticated()) {
             System.out.println("Currently logged in as: " + authService.whoami().getAdminEmail());
         } else {
-            System.out.println("Please login to continue using: login");
+            System.out.println("Please login to continue using: login or auth login");
         }
         System.out.println("Type 'help' for a list of commands.");
     }
@@ -72,7 +75,6 @@ public class TopLevelCommand implements Runnable {
                 System.out.println("\u001B[31m✗ Invalid email or password\u001B[0m");
             }
         } catch (org.jline.reader.UserInterruptException e) {
-            // User cancelled the prompt (Ctrl+C)
             System.out.println("\n\u001B[33m- Login cancelled\u001B[0m");
         }
     }

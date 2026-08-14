@@ -9,7 +9,6 @@ import picocli.CommandLine.Parameters;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Component
 @Command(name = "users", description = "User management commands")
@@ -35,13 +34,14 @@ public class UsersCommand {
     public void list() {
         if (!checkAuth()) return;
         List<User> users = userService.listUsers();
-        System.out.printf("%-36s | %-20s | %-25s | %-10s | %-15s | %-10s | %-5s | %-10s%n", 
-                "ID", "Name", "Email", "Type", "Department", "Grad Year", "Verif", "Plan");
-        System.out.println("-".repeat(140));
+        System.out.printf("%-36s | %-20s | %-25s | %-10s | %-15s | %-10s | %-5s | %-10s | %-10s%n", 
+                "ID", "Name", "Email", "Type", "Department", "Grad Year", "Verif", "Plan", "Status");
+        System.out.println("-".repeat(155));
         for (User u : users) {
-            System.out.printf("%-36s | %-20s | %-25s | %-10s | %-15s | %-10s | %-5s | %-10s%n",
-                    u.getId(), truncate(u.getName(), 20), truncate(u.getEmail(), 25), u.getUserType(),
-                    truncate(u.getDepartment(), 15), u.getGraduatingYear(), u.getIsVerified(), u.getSubscriptionPlan());
+            System.out.printf("%-36s | %-20s | %-25s | %-10s | %-15s | %-10s | %-5s | %-10s | %-10s%n",
+                    u.getId(), truncate(u.getName(), 20), truncate(u.getEmail(), 25), truncate(u.getUserType(), 10),
+                    truncate(u.getDepartment(), 15), u.getGraduatingYear(), u.getIsVerified(),
+                    truncate(u.getSubscriptionPlan(), 10), truncate(u.getSubscriptionStatus(), 10));
         }
     }
 
@@ -55,16 +55,32 @@ public class UsersCommand {
             System.out.println("ID: " + u.getId());
             System.out.println("Name: " + u.getName());
             System.out.println("Email: " + u.getEmail());
+            System.out.println("Role: " + u.getRole());
             System.out.println("User Type: " + u.getUserType());
+            System.out.println("Phone: " + u.getPhone());
             System.out.println("Department: " + u.getDepartment());
-            System.out.println("College: " + u.getCollege());
-            System.out.println("Graduating Year: " + u.getGraduatingYear());
-            System.out.println("Verified: " + u.getIsVerified());
-            System.out.println("Subscription: " + u.getSubscriptionPlan());
-            System.out.println("Faculty Proof: " + u.getFacultyProof());
             System.out.println("Designation: " + u.getDesignation());
+            System.out.println("College: " + u.getCollege());
+            System.out.println("Branch: " + u.getBranch());
+            System.out.println("Stream: " + u.getStream());
+            System.out.println("Graduating Year: " + u.getGraduatingYear());
+            System.out.println("Profile Completed: " + u.getProfileCompleted());
+            System.out.println("Verified: " + u.getIsVerified());
+            System.out.println("Faculty Verified: " + u.getFacultyVerified());
+            System.out.println("Faculty Verification Status: " + u.getFacultyVerificationStatus());
+            System.out.println("Faculty Verification Image: " + u.getFacultyVerificationImage());
+            System.out.println("Faculty Verification Reason: " + u.getFacultyVerificationRejectionReason());
+            System.out.println("Subscription Plan: " + u.getSubscriptionPlan());
+            System.out.println("Subscription Status: " + u.getSubscriptionStatus());
+            System.out.println("Subscription Expiry: " + u.getSubscriptionExpiry());
             System.out.println("Ranking Score: " + u.getRankingScore());
+            System.out.println("FCM Token: " + u.getFcmToken());
+            System.out.println("Github: " + u.getGithub());
+            System.out.println("Link2: " + u.getLink2());
+            System.out.println("Description: " + u.getDescription());
+            System.out.println("Last Login: " + u.getLastLogin());
             System.out.println("Created At: " + u.getCreatedAt());
+            System.out.println("Updated At: " + u.getUpdatedAt());
         } else {
             System.out.println("\u001B[31m✗ User not found\u001B[0m");
         }

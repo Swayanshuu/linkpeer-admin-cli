@@ -10,7 +10,6 @@ import picocli.CommandLine.Parameters;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Component
 @Command(name = "posts", description = "Post management commands")
@@ -38,13 +37,14 @@ public class PostsCommand {
     public void list() {
         if (!checkAuth()) return;
         List<Post> posts = postRepository.findAll();
-        System.out.printf("%-36s | %-20s | %-10s | %-20s | %-20s%n", 
+        System.out.printf("%-10s | %-20s | %-10s | %-25s | %-20s%n", 
                 "Post ID", "Author", "Type", "Title", "Created At");
-        System.out.println("-".repeat(115));
+        System.out.println("-".repeat(95));
         for (Post p : posts) {
-            String authorName = p.getAuthor() != null ? p.getAuthor().getName() : "Unknown";
-            System.out.printf("%-36s | %-20s | %-10s | %-20s | %-20s%n",
-                    p.getId(), authorName, p.getPostType(), truncate(p.getTitle(), 20), p.getCreatedAt());
+            String authorName = p.getUserName() != null ? p.getUserName() : 
+                                (p.getAuthor() != null ? p.getAuthor().getName() : "Unknown");
+            System.out.printf("%-10d | %-20s | %-10s | %-25s | %-20s%n",
+                    p.getId(), truncate(authorName, 20), p.getPostType(), truncate(p.getTitle(), 25), p.getCreatedAt());
         }
     }
 
@@ -56,13 +56,23 @@ public class PostsCommand {
             Post p = postOpt.get();
             System.out.println("--- Post Details ---");
             System.out.println("ID: " + p.getId());
-            System.out.println("Author: " + (p.getAuthor() != null ? p.getAuthor().getName() : "Unknown"));
+            System.out.println("Author ID: " + (p.getAuthor() != null ? p.getAuthor().getId() : "null"));
+            System.out.println("Author Name: " + p.getUserName());
+            System.out.println("Author Photo: " + p.getUserPhoto());
             System.out.println("Type: " + p.getPostType());
             System.out.println("Title: " + p.getTitle());
             System.out.println("Content: " + p.getContent());
             System.out.println("Link: " + p.getLink());
-            System.out.println("Images: " + p.getImageUrls());
+            System.out.println("Image URL: " + p.getImageUrl());
+            System.out.println("Image URLs List: " + p.getImageUrls());
+            System.out.println("File Name: " + p.getFileName());
+            System.out.println("File URL: " + p.getFileUrl());
+            System.out.println("File Type: " + p.getFileType());
+            System.out.println("Department: " + p.getDepartment());
+            System.out.println("Branch: " + p.getBranch());
+            System.out.println("Designation: " + p.getDesignation());
             System.out.println("Created At: " + p.getCreatedAt());
+            System.out.println("Updated At: " + p.getUpdatedAt());
         } else {
             System.out.println("\u001B[31m✗ Invalid post id\u001B[0m");
         }
@@ -83,7 +93,7 @@ public class PostsCommand {
         if (!checkAuth()) return;
         List<Post> posts = postRepository.findByAuthorId(userId);
         for (Post p : posts) {
-            System.out.printf("%s - %s (%s)%n", p.getId(), p.getTitle(), p.getCreatedAt());
+            System.out.printf("%d - %s (%s)%n", p.getId(), p.getTitle(), p.getCreatedAt());
         }
     }
 

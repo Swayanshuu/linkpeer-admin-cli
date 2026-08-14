@@ -54,4 +54,24 @@ public class ExportCommand {
             System.out.println("\u001B[31m✗ Export failed\u001B[0m");
         }
     }
+
+    @Command(name = "notices", description = "Export notices to CSV")
+    public void notices() {
+        if (!checkAuth()) return;
+        if (exportService.exportNotices("notices.csv")) {
+            System.out.println("\u001B[32m✓ Exported notices successfully to notices.csv\u001B[0m");
+        } else {
+            System.out.println("\u001B[31m✗ Export failed\u001B[0m");
+        }
+    }
+
+    @Command(name = "broadcasts", description = "Export broadcasts to CSV")
+    public void broadcasts() {
+        if (!checkAuth()) return;
+        if (exportService.exportBroadcasts("broadcasts.csv")) {
+            System.out.println("\u001B[32m✓ Exported broadcasts successfully to broadcasts.csv\u001B[0m");
+        } else {
+            System.out.println("\u001B[31m✗ Export failed\u001B[0m");
+        }
+    }
 }
