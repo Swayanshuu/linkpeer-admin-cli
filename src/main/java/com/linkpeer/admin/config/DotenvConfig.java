@@ -34,11 +34,22 @@ public class DotenvConfig implements EnvironmentPostProcessor {
             dotenvCurrent.entries().forEach(entry -> envMap.put(entry.getKey(), entry.getValue()));
         } catch (Exception ignored) {}
 
+        // 3. Ensure any loaded SUPABASE_DB_URL has PgBouncer-compatible query settings
+        String rawUrl = (String) envMap.get("SUPABASE_DB_URL");
+        if (rawUrl == null) {
+            rawUrl = System.getenv("SUPABASE_DB_URL");
+        }
+        if (rawUrl != null && rawUrl.contains("postgresql")) {
+            String sanitizedUrl = sanitizePgUrl(rawUrl);
+            envMap.put("SUPABASE_DB_URL", sanitizedUrl);
+            envMap.put("spring.datasource.url", sanitizedUrl);
+        }
+
         if (!envMap.isEmpty()) {
             environment.getPropertySources().addFirst(new MapPropertySource("dotenvProperties", envMap));
         }
 
-        // 3. Check if DB URL is defined
+        // 4. Check if DB URL is defined
         boolean hasUrl = environment.containsProperty("SUPABASE_DB_URL") 
                 || System.getenv().containsKey("SUPABASE_DB_URL") 
                 || envMap.containsKey("SUPABASE_DB_URL");
@@ -48,6 +59,16 @@ public class DotenvConfig implements EnvironmentPostProcessor {
             System.err.println("   Please place a .env file in the current directory or in: " + globalEnvFile.getAbsolutePath());
             System.err.println("   Refer to .env.example for required environment keys.\n");
         }
+    }
+
+    private String sanitizePgUrl(String url) {
+        if (!url.contains("prepareThreshold=")) {
+            url += (url.contains("?") ? "&" : "?") + "prepareThreshold=0";
+        }
+        if (!url.contains("preferQueryMode=")) {
+            url += (url.contains("?") ? "&" : "?") + "preferQueryMode=simple";
+        }
+        return url;
     }
 }
 

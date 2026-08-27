@@ -8,13 +8,14 @@ spring:
   config:
     import: optional:file:.env[.properties], optional:file:${user.home}/.linkpeer/.env[.properties]
   datasource:
-    url: ${SUPABASE_DB_URL:jdbc:postgresql://aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0}
+    url: ${SUPABASE_DB_URL:jdbc:postgresql://aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0&preferQueryMode=simple}
     username: ${SUPABASE_DB_USERNAME:postgres.eodpcmtoqblwnyutuuhg}
     password: ${SUPABASE_DB_PASSWORD:Swayanshu@119Shibu}
     driver-class-name: org.postgresql.Driver
     hikari:
       data-source-properties:
-        prepareThreshold: 0
+        prepareThreshold: "0"
+        preferQueryMode: "simple"
   jpa:
     hibernate:
       ddl-auto: none

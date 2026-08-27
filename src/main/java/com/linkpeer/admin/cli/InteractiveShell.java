@@ -2,6 +2,7 @@ package com.linkpeer.admin.cli;
 
 import com.linkpeer.admin.cli.commands.TopLevelCommand;
 import com.linkpeer.admin.service.AuthService;
+import com.linkpeer.admin.service.VersionCheckService;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.UserInterruptException;
@@ -12,16 +13,20 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
 
+import java.util.concurrent.CompletableFuture;
+
 @Component
 public class InteractiveShell implements CommandLineRunner {
 
     private final TopLevelCommand topLevelCommand;
     private final AuthService authService;
+    private final VersionCheckService versionCheckService;
     private final CommandLine.IFactory factory;
 
-    public InteractiveShell(TopLevelCommand topLevelCommand, AuthService authService, CommandLine.IFactory factory) {
+    public InteractiveShell(TopLevelCommand topLevelCommand, AuthService authService, VersionCheckService versionCheckService, CommandLine.IFactory factory) {
         this.topLevelCommand = topLevelCommand;
         this.authService = authService;
+        this.versionCheckService = versionCheckService;
         this.factory = factory;
     }
 
@@ -29,6 +34,9 @@ public class InteractiveShell implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        // Trigger background non-blocking version update check
+        CompletableFuture<String> updateNoticeFuture = versionCheckService.checkForUpdatesAsync();
+
         // Register shutdown hook to clean up session when process exits or terminal closes
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
@@ -56,7 +64,15 @@ public class InteractiveShell implements CommandLineRunner {
                 " | |____| | | | |   <| |  |  __/  __/ |   \n" +
                 " |______|_|_| |_|_|\\_\\|_|   \\___|\\___|_|  \n" +
                 reset + blueBold +
-                "          ADMINISTRATION CLI              \n" + reset + "\n");
+                "          ADMINISTRATION CLI (v" + versionCheckService.getCurrentVersion() + ")          \n" + reset + "\n");
+
+        // If an update notice is ready, print it immediately
+        try {
+            String updateNotice = updateNoticeFuture.getNow(null);
+            if (updateNotice != null) {
+                System.out.print(updateNotice);
+            }
+        } catch (Exception ignored) {}
 
         try (Terminal terminal = TerminalBuilder.builder().system(true).build()) {
             reader = LineReaderBuilder.builder()
