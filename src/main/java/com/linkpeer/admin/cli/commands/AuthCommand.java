@@ -8,7 +8,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 
 @Component
-@Command(name = "auth", aliases = {"login", "logout", "whoami"}, description = "Authentication commands")
+@Command(name = "auth", description = "Authentication commands")
 public class AuthCommand {
 
     private final AuthService authService;

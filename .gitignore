@@ -5,6 +5,8 @@
 
 # Build output & compiled classes
 target/
+lib/
+node_modules/
 *.class
 
 # Logs
@@ -25,3 +27,4 @@ logs/
 # OS metadata
 .DS_Store
 Thumbs.db
+
