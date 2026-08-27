@@ -42,13 +42,13 @@ public class TopLevelCommand implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("Welcome to LinkPeer Admin CLI.");
+        System.out.println("\u001B[1;36mWelcome to LinkPeer Admin CLI.\u001B[0m");
         if (authService.isAuthenticated()) {
-            System.out.println("Currently logged in as: " + authService.whoami().getAdminEmail());
+            System.out.println("\u001B[1;32mCurrently logged in as:\u001B[0m " + authService.whoami().getAdminEmail());
         } else {
-            System.out.println("Please login to continue using: login or auth login");
+            System.out.println("\u001B[1;33mPlease login to continue using: login or auth login\u001B[0m");
         }
-        System.out.println("Type 'help' for a list of commands.");
+        System.out.println("\u001B[90mType 'help' for a list of commands.\u001B[0m\n");
     }
 
     @Command(name = "login", description = "Login to the admin CLI")

@@ -1,6 +1,10 @@
 spring:
   application:
     name: linkpeer-admin-cli
+  main:
+    banner-mode: "off"
+    log-startup-info: false
+    web-application-type: none
   config:
     import: optional:file:.env[.properties], optional:file:${user.home}/.linkpeer/.env[.properties]
   datasource:
@@ -15,13 +19,13 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
-  main:
-    web-application-type: none
+        format_sql: false
 
 logging:
   level:
-    root: INFO
-    org.springframework: WARN
-    org.hibernate: WARN
+    root: ERROR
+    org.springframework: ERROR
+    org.hibernate: ERROR
+    org.hibernate.orm.deprecation: OFF
     com.linkpeer.admin: INFO
+

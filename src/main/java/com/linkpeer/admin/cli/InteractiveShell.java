@@ -42,15 +42,21 @@ public class InteractiveShell implements CommandLineRunner {
 
         CommandLine cmd = new CommandLine(topLevelCommand, factory);
         
-        System.out.println("\n\n" +
+        String cyanBold = "\u001B[1;36m";
+        String blueBold = "\u001B[1;34m";
+        String greenBold = "\u001B[1;32m";
+        String yellowBold = "\u001B[1;33m";
+        String reset = "\u001B[0m";
+
+        System.out.println("\n" + cyanBold +
                 "  _      _       _    _____               \n" +
                 " | |    (_)     | |  |  __ \\              \n" +
                 " | |     _ _ __ | | _| |__) |__  ___ _ __ \n" +
                 " | |    | | '_ \\| |/ /  ___/ _ \\/ _ \\ '__|\n" +
                 " | |____| | | | |   <| |  |  __/  __/ |   \n" +
-                " |______|_|_| |_|_|\\_\\|_|   \\___|\\___|_|   \n" +
-                "                                          \n" +
-                "          ADMINISTRATION CLI              \n\n");
+                " |______|_|_| |_|_|\\_\\|_|   \\___|\\___|_|  \n" +
+                reset + blueBold +
+                "          ADMINISTRATION CLI              \n" + reset + "\n");
 
         try (Terminal terminal = TerminalBuilder.builder().system(true).build()) {
             reader = LineReaderBuilder.builder()
@@ -59,18 +65,18 @@ public class InteractiveShell implements CommandLineRunner {
 
             // Force login credentials prompt immediately on CLI startup
             while (!authService.isAuthenticated()) {
-                System.out.println("\u001B[33m🔐 Authentication Required. Please log in.\u001B[0m");
+                System.out.println(yellowBold + "🔐 Authentication Required. Please log in." + reset);
                 try {
-                    String email = reader.readLine("Email: ");
+                    String email = reader.readLine(cyanBold + "Email: " + reset);
                     if (email == null || email.trim().isEmpty()) {
                         continue;
                     }
-                    String password = reader.readLine("Password: ", '*');
+                    String password = reader.readLine(cyanBold + "Password: " + reset, '*');
                     if (password == null || password.trim().isEmpty()) {
                         continue;
                     }
                     if (authService.login(email.trim(), password)) {
-                        System.out.println("\u001B[32m✓ Login successful!\u001B[0m\n");
+                        System.out.println(greenBold + "✓ Login successful!" + reset + "\n");
                         break;
                     } else {
                         System.out.println("\u001B[31m✗ Invalid email or password. Please try again.\u001B[0m\n");
@@ -85,7 +91,7 @@ public class InteractiveShell implements CommandLineRunner {
             // Execute root command once to display welcome message
             cmd.execute();
 
-            String prompt = "linkpeer> ";
+            String prompt = cyanBold + "linkpeer" + greenBold + "> " + reset;
             while (true) {
                 try {
                     String line = reader.readLine(prompt);
