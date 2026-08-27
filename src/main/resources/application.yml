@@ -4,9 +4,9 @@ spring:
   config:
     import: optional:file:.env[.properties], optional:file:${user.home}/.linkpeer/.env[.properties]
   datasource:
-    url: ${SUPABASE_DB_URL}
-    username: ${SUPABASE_DB_USERNAME}
-    password: ${SUPABASE_DB_PASSWORD}
+    url: ${SUPABASE_DB_URL:}
+    username: ${SUPABASE_DB_USERNAME:}
+    password: ${SUPABASE_DB_PASSWORD:}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:

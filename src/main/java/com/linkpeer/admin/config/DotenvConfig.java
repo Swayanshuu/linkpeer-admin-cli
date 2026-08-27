@@ -5,8 +5,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
-import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,16 +14,40 @@ public class DotenvConfig implements EnvironmentPostProcessor {
 
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
+        Map<String, Object> envMap = new HashMap<>();
+
+        // 1. Try loading from user home ~/.linkpeer/.env
+        String userHome = System.getProperty("user.home");
+        File globalEnvDir = new File(userHome + File.separator + ".linkpeer");
+        File globalEnvFile = new File(globalEnvDir, ".env");
+        if (globalEnvFile.exists()) {
+            try {
+                Dotenv dotenvHome = Dotenv.configure().directory(globalEnvDir.getAbsolutePath()).ignoreIfMissing().load();
+                dotenvHome.entries().forEach(entry -> envMap.put(entry.getKey(), entry.getValue()));
+            } catch (Exception ignored) {}
+        }
+
+        // 2. Try loading from current working directory .env (overrides global)
+        String currentDir = System.getProperty("user.dir");
         try {
-            String dir = System.getProperty("user.dir");
-            System.out.println("Loading .env from: " + dir);
-            Dotenv dotenv = Dotenv.configure().directory(dir).ignoreIfMissing().load();
-            Map<String, Object> envMap = new HashMap<>();
-            dotenv.entries().forEach(entry -> envMap.put(entry.getKey(), entry.getValue()));
-            
+            Dotenv dotenvCurrent = Dotenv.configure().directory(currentDir).ignoreIfMissing().load();
+            dotenvCurrent.entries().forEach(entry -> envMap.put(entry.getKey(), entry.getValue()));
+        } catch (Exception ignored) {}
+
+        if (!envMap.isEmpty()) {
             environment.getPropertySources().addFirst(new MapPropertySource("dotenvProperties", envMap));
-        } catch (Exception e) {
-            System.err.println("Failed to load .env file: " + e.getMessage());
+        }
+
+        // 3. Check if DB URL is defined
+        boolean hasUrl = environment.containsProperty("SUPABASE_DB_URL") 
+                || System.getenv().containsKey("SUPABASE_DB_URL") 
+                || envMap.containsKey("SUPABASE_DB_URL");
+                
+        if (!hasUrl) {
+            System.err.println("\n⚠️ WARNING: SUPABASE_DB_URL environment variable or .env file was not found!");
+            System.err.println("   Please place a .env file in the current directory or in: " + globalEnvFile.getAbsolutePath());
+            System.err.println("   Refer to .env.example for required environment keys.\n");
         }
     }
 }
+
