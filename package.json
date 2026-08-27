@@ -1,6 +1,6 @@
 {
   "name": "@linkpeer/admin",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "LinkPeer Admin CLI",
   "main": "bin/linkpeer.js",
   "bin": {
