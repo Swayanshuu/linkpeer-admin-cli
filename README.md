@@ -89,7 +89,7 @@ The CLI automatically connects to the LinkPeer database out of the box with zero
 If you wish to override the database connection for local development or staging, you can place a `.env` file in your current working directory or in `~/.linkpeer/.env`:
 
 ```env
-SUPABASE_DB_URL=jdbc:postgresql://custom-host:6543/postgres?sslmode=require&prepareThreshold=0
+SUPABASE_DB_URL=jdbc:postgresql://custom-host:6543/postgres?sslmode=require&prepareThreshold=0&preferQueryMode=simple
 SUPABASE_DB_USERNAME=custom_user
 SUPABASE_DB_PASSWORD=custom_password
 ```

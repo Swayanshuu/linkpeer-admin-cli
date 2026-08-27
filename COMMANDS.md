@@ -143,3 +143,21 @@ Export data from the platform to CSV files for external analysis. Note: The gene
 | `export subscriptions` | Export all subscription data to `subscriptions.csv`. | `export subscriptions` |
 | `export notices` | Export all notice data to `notices.csv`. | `export notices` |
 | `export broadcasts` | Export all broadcast data to `broadcasts.csv`. | `export broadcasts` |
+
+---
+
+## Automatic Features & Environment Configuration
+
+### Automatic NPM Update Notifications
+The CLI automatically performs a non-blocking check against the NPM registry on startup. If a newer version of `@linkpeer/admin` is published, an update notice will be displayed with instructions to update via `npm install -g @linkpeer/admin`.
+
+### Database Connection & PgBouncer Compatibility
+The CLI includes built-in support for PostgreSQL connection poolers (such as Supabase's PgBouncer on port `6543`). It automatically forces `prepareThreshold=0` and `preferQueryMode=simple` to ensure prepared statement collisions (`ERROR: prepared statement "S_..." already exists`) are prevented.
+
+To override the default database connection in local environments or `.env`:
+```env
+SUPABASE_DB_URL=jdbc:postgresql://custom-host:6543/postgres?sslmode=require&prepareThreshold=0&preferQueryMode=simple
+SUPABASE_DB_USERNAME=custom_user
+SUPABASE_DB_PASSWORD=custom_password
+```
+
