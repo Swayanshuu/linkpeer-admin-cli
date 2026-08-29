@@ -1,0 +1,25 @@
+{
+  "name": "@linkpeer/admin",
+  "version": "1.0.10",
+  "description": "LinkPeer Admin CLI",
+  "main": "bin/linkpeer.js",
+  "bin": {
+    "linkpeer": "bin/linkpeer.js"
+  },
+  "files": [
+    "bin",
+    "lib"
+  ],
+  "scripts": {
+    "build": "node scripts/build.js",
+    "prepare": "node scripts/build.js",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "linkpeer",
+    "admin",
+    "cli"
+  ],
+  "author": "LinkPeer",
+  "license": "ISC"
+}

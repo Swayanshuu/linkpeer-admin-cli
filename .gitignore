@@ -1,0 +1,30 @@
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Build output & compiled classes
+target/
+lib/
+node_modules/
+*.class
+
+# Logs
+logs/
+*.log
+
+# Generated CSV Exports
+*.csv
+
+# IDE metadata
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
